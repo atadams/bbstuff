@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ game.game_description }}</h1>
+
+  {% regroup game.at_bats.all by inning as grouped_innings %}
+  {% for inning_group in grouped_innings %}
+
+    {% regroup inning_group.list by top_bottom as grouped_top_bottom %}
+    {% for half_inning in grouped_top_bottom %}
+      <h2>{{ half_inning.grouper }} {{ inning_group.grouper }}</h2>
+      <ul>
+        {% for at_bat in half_inning.list %}
+          <li>
+            {{ at_bat.outcome_description }}
+            <ul>
+              {% for pitch in at_bat.pitches.all %}
+                <li><a href="{% url 'game:pitch_update' pitch.id %}" target="pitchwindow">{{ pitch }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+
+  {% endfor %}
+
+{#  {% for at_bat in game.at_bats.all %}#}
+{#    <li>{{ at_bat.outcome_description }}</li>#}
+{#  {% endfor %}#}
+{% endblock %}

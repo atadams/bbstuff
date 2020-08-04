@@ -73,3 +73,5 @@ te4q/media/
 .vscode/
 static
 !te4q/static
+!/media/
+/statcast/media

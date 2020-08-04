@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <style>
+    pre {
+      font-size: 12px;
+    }
+
+    #pitcher-boundry,
+    #tipping-glove {
+      border: 1px solid #fff;
+      position: absolute;
+    }
+  </style>
+
+  <h2>{{ pitch.at_bat.full_inning_string }}</h2>
+
+  <div class="row">
+    <div class="col-auto m-0 p-0">
+      <div id="pitcher-boundry" style="left: {{ pitch.video_rubber_x }}px; width: 700px; height: {{ pitch.pitcher_height_y }}px; top: {{ pitch.video_rubber_y }}px;"></div>
+      <video id="pitchvideo" src="{{ pitch.video_url }}" controls></video>
+    </div>
+    <div class="col-2">
+      <table class="table table-sm" style="width: auto;">
+        <tbody>
+          <tr>
+            <th class="text-right align-middle">
+              <pre class="mb-0">Pitch Scene Time:</pre>
+            </th>
+            <td>
+              <pre class="mb-0"><span id="pitch_scene_time"></span></pre>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-right align-middle">
+              <pre class="mb-0">Pitch Release Time:</pre>
+            </th>
+            <td>
+              <pre class="mb-0"><span id="pitch_release_time"></span></pre>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update">
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const vid = document.getElementById('pitchvideo');
+    let frameTime = 1 / 59.94;
+
+    vid.ontimeupdate = function () {
+      myFunction()
+    };
+
+    function myFunction() {
+      let offsettime = (vid.currentTime).toFixed(2);
+      document.getElementById("pitch_release_time").innerHTML = offsettime;
+      document.getElementById("pitch_scene_time").innerHTML = offsettime;
+      }
+
+      $(document).ready(function () {
+        $('input[type="submit"]').focus();
+
+        $('#id_video_rubber_x').change(function () {
+          $('#pitcher-boundry').css('left', $(this).val() + 'px');
+        });
+
+        $('#id_video_rubber_y').change(function () {
+          $('#pitcher-boundry').css('top', $(this).val() + 'px');
+        });
+
+
+        $('#id_pitcher_height_y').change(function () {
+          let height_diff = parseInt($('#pitcher-boundry').css('height'), 10) - $(this).val();
+          $('#pitcher-boundry').css('height', $(this).val() + 'px');
+          $('#id_video_rubber_y').val(+$('#id_video_rubber_y').val() + height_diff);
+
+          $('#pitcher-boundry').css('top', $('#id_video_rubber_y').val() + 'px');
+        });
+
+        $('#pitch_release_time').on('click', function (e) {
+          $('#id_pitch_release_time').val(document.getElementById("pitch_release_time").innerHTML);
+        });
+
+        $('#pitch_scene_time').on('click', function (e) {
+          $('#id_pitch_scene_time').val(document.getElementById("pitch_scene_time").innerHTML);
+        });
+
+        $('#pitchvideo').on('click', function (e) {
+          let offset = $(this).offset();
+          let posX = offset.left;
+          let posY = offset.top;
+          let clickX = e.pageX - posX;
+          let clickY = e.pageY - posY;
+
+          let box_height = parseInt($('#id_pitcher_height_y').val(), 10);
+
+          if (e.altKey && e.metaKey) {
+            let height_diff = parseInt($('#id_video_rubber_y').val()) - clickY;
+            $('#id_pitcher_height_y').val(box_height + height_diff).trigger('change');
+
+          } else if (e.metaKey) {
+            $('#id_video_rubber_x').val(clickX).trigger('change');
+            $('#id_video_rubber_y').val(clickY - box_height).trigger('change');
+          }
+
+          e.preventDefault();
+        });
+
+        $(document).keydown(function (evt) {
+          vid.pause();
+          if (vid.paused) { //or you can force it to pause here
+            if (evt.which === 188) { // < key
+              //one frame back
+              vid.currentTime = Math.max(0, vid.currentTime - frameTime);
+            } else if (evt.which === 190) { // > key
+              //one frame forward
+              //Don't go past the end, otherwise you may get an error
+              vid.currentTime = vid.currentTime + frameTime;
+            }
+          }
+        });
+      });
+  </script>
+{% endblock %}

@@ -246,3 +246,6 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+PLAY_VIDEO_ROOT = f'{MEDIA_ROOT}/plays/'
+PLAY_VIDEO_URL = f'{MEDIA_URL}/plays/'
