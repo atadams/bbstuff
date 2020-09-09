@@ -20,7 +20,7 @@
       <h2 class="h4 pt-2" style="border-top: 3px solid #999">{{ half_inning.grouper }} {{ inning_group.grouper }}</h2>
 
       {% for at_bat in half_inning.list %}
-        <h3 class="h6 mb-0 pt-2" style="border-top: 1px solid #ccc">{{ at_bat.batter.name_first_last }} <small class="text-muted"> – {{ at_bat.pitcher.name_first_last }} pitching. {{ at_bat.best_description }}</small></h3>
+        <h3 class="h6 mb-0 pt-2" style="border-top: 1px solid #ccc">{{ at_bat.batter.name_first_last }} <small class="text-muted"> – {{ at_bat.best_description }} {{ at_bat.id }}</small></h3>
 
         <ul class="list-inline mb-3">
           {% for pitch in at_bat.pitches.all %}
@@ -33,7 +33,7 @@
 
 {#                <a href="{% url 'game:pitch_detail' pitch.id %}" class="badge badge-{% if pitch.is_highlight %}success{% else %}light{% endif %}">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</a>#}
 
-              <a href="{{ pitch.video_url }}" class="badge badge-{% if pitch.is_highlight %}success{% else %}light{% endif %}">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</a>
+              <a href="{{ pitch.video_url }}" class="badge badge-{% if pitch.is_highlight %}success{% else %}light{% endif %}" download>P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</a>
                 {% else %}
                 <span class="badge badge-secondary">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</span>
               {% endif %}

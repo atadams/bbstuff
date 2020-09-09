@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "astros-games",
+  "private_key_id": "242b4b9aca6375543ed880add0ddf5651c66297d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCuMuRIsCQJgfOj\n938rkh7ibBJiQog104ebuHkrFNn0hlBrFSR7LH0YCUJ+sXD0OOP5qMzErv+D16DP\n3faHYJ+rT2rsYSpDKJF2KGaAAVgsti4yQ4SHIj+QcV3nKMgA6JX49A8r9fl2z3uc\niT671Vw+wZmQw+WtMCOV7Yt/LiGJcnQy3YRN1ttUgWnpCD6Aou/g/15tGf/Fp48h\n5z9MQEFGzzmqcei3SQBZomqvI6icmnl/AjGKMTxwqqTPP4/K03oZkGRo40VfFDek\nRLcix/Ms4yA0TYYTlFGsTwemrM+9iueN+HY0T1VRKhaFB86QXCF7DidcTHECJhyr\nUO8gE0BrAgMBAAECggEABGoX68aVDRcZlhIsh3UbHVCtJrS4J5awcNxK/n1KOYNF\nQkPKOGF0gMtmzqizIkrmMfecgBzGH/3RCdRveTz1/QHD4880jAAGRgHFy6obLNYv\nSkcWveN3CCRNcL5n+IYom0FETyjMJzZ64uNBfIWbrYGv8Ez1KoEuePlFAVSSy+Dv\nUS855VcxiV40HMFlLolEjdkplceozqNV4qXSCF+/Ga7uei4iZKySbjmagMz6r05D\n6UGS1iHt76ztt+yK5KusdaAB4wjoa0Sd6god/Ql8eeZOYjvScHscA87GdmScozPK\nLf+/mEkZkAEhDxCrjn7rdwGTOgAsUCZjvazL8WaU2QKBgQDVVw+b7oQJsq1rJak+\ny3QT9V76X0aIt0HoenjXgqrArxgU0E29yYtrHws1Y+UueFCQ7bgPSZw9ZlDrq5yf\nhS5OLPIfcWhniSG8ry/fAeBFp7prA8vne7NKOkw0VEGD+iLzmv/NiPRqTGxThX/B\n04LzxTvYGloKJsn+t76v2WOt0wKBgQDRCC1h6JCr/4YR3Xcnk/IeBoAMl1j1LTHT\n/in7v5uYTPpwXpsF/IxWEOYUqFTB8AYUSn/bRhu6utMLr/v/fFsO/XFuGAEJgO+u\nonlYhi0odlzzShbuKViptj9HzQ9tLXMZ5XaQ04r6zoDR8VnrZij7G7oE05dhu+R4\nCJskX/rMCQKBgQCBWrV7LabfnngqBH7XNVNfmqKJGuXQlZUf2cqVmYPhKwll7VuF\n3MNtIziPmc9nWso25fx5QH+8duJP0xE3Y/BMtFHmoMPWKz7Kgkp7ZE7QzT9qDbY/\n2DBArJJyFDhZRnyUyoGZ5RWVslroVYS+SHoZRpjfkjLP/u7xRAYZ56zZwwKBgHwh\nRQHtX2wkU3NsdoPUQWU/Ku9POQ5vhjWDq17KTBXHMLlmFN0bOiMp6de+loaMiK+o\nBgEqwvDCXO2F1jnDmTdvndpo+sSwAqVL6o99Lnfmwg/foXpQp0ww46c5yL1mzgFE\n2IHsfY2u76S8lE9L3W4w6uhO1oi9UVFOmwKg1IgxAoGAW+52A7biRKpFs7JGfEmP\nuQVz5RaZjF+drElKeOd4qrjbwQbXRhhuhO3uHYLcksxptNAvurqQL2I//z7Yx0Fh\n32Dy5BXtKyXBbgeG83Bgq8ijqxgukRm+6zDUStgmlu0KN+cOa/qLyHU9YzB3r7dO\nOnsBLv0Wvi6bNNYsHlrKYh4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "astros-games@astros-games.iam.gserviceaccount.com",
+  "client_id": "100598008820328536898",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/astros-games%40astros-games.iam.gserviceaccount.com"
+}

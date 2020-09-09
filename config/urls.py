@@ -10,7 +10,7 @@ from game import urls as game_url
 urlpatterns = [
 
     path('', include(game_url)),
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),

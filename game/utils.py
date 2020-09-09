@@ -27,6 +27,10 @@ def get_player_by_id_name(player_id, player_name):
             'name_first_last': player_name,
         }
     )
+    if player.name_last == '':
+        player.name_first = player.name_first_last.split(' ', 1)[0]
+        player.name_last = player.name_first_last.split(' ', 1)[1]
+        player.save()
 
     return player
 
@@ -36,12 +40,12 @@ def get_game(game_id, game_date, game_status, home_team, away_team, data):
         id=game_id,
         defaults={
             'date': game_date,
-            'game_status': game_status,
+            # 'game_status': game_status,
             'home_team': home_team,
             'away_team': away_team,
         }
     )
-
+    game.date = game_date
     game.data = data
     game.save()
 
@@ -49,6 +53,8 @@ def get_game(game_id, game_date, game_status, home_team, away_team, data):
 
 
 def get_ab(game, ab_dict, top_bottom):
+    batter = get_player_by_id_name(ab_dict['batter'], ab_dict['batter_name'])
+    pitcher = get_player_by_id_name(ab_dict['pitcher'], ab_dict['pitcher_name'])
     at_bat, created = AtBat.objects.get_or_create(
         game=game,
         ab_number=ab_dict['ab_number'],
@@ -56,15 +62,14 @@ def get_ab(game, ab_dict, top_bottom):
             'top_bottom': top_bottom,
             'team_batting_id': ab_dict['team_batting_id'],
             'team_pitching_id': ab_dict['team_fielding_id'],
-            'batter_id': ab_dict['batter'],
-            'pitcher_id': ab_dict['pitcher'],
+            'batter': batter,
+            'pitcher': pitcher,
             'inning': ab_dict['inning'],
             'ab_number': ab_dict['ab_number'],
-            'result': ab_dict['result'],
-            'description': ab_dict['description'],
         }
     )
-    at_bat.outcome_description = ab_dict['des']
+    at_bat.result = ab_dict.get('result', '')
+    at_bat.description = ab_dict.get('des', '')
     at_bat.save()
 
     return at_bat
@@ -83,3 +88,11 @@ def get_pitch(at_bat, pitch_dict):
     pitch.save()
 
     return pitch
+
+
+def even_number(num):
+    int_num = int(num)
+    if int_num % 2 == 0:
+        return int_num
+    else:
+        return int_num + 1

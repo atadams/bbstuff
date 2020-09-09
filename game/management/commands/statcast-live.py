@@ -1,76 +1,107 @@
+import json
 import os
 import time
 import urllib.request as request
-import json
-from datetime import datetime
 from pathlib import Path
 
 import requests
+from dateutil.parser import parse
+from django.core.management import BaseCommand
 
-from config.settings.base import APPS_DIR, MEDIA_ROOT, PLAY_VIDEO_ROOT
-from game.models import Pitch, Player
-from game.utils import get_ab, get_game, get_pitch, get_player_by_id_name, get_team_by_dict
+from config.settings.base import PLAY_VIDEO_ROOT
+from game.utils import get_ab, get_game, get_pitch, get_team_by_dict
 
-pitches = Pitch.objects.filter(data__pitch_type='FF')
 
-interval = 5
-times = 1
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        interval = 2
+        times = -1
+        game_id = 631160
+        download_videos = True
+        save_highlights = False
 
-headers = {'referer': 'https://www.mlb.com/video/', }
+        headers = {'referer': 'https://www.mlb.com/video/', }
 
-game_id = 631393
-feeds = ['team_home', 'team_away']
-save_path = './media/'
-# save_path = '/Users/aadams/Downloads/astro_video/'
+        feeds = ['team_away', 'team_home']
 
-# home, away, network
-clips_base_url = f'https://fastball-clips.mlb.com/{game_id}/home'
+        # home, away, network
+        clips_base_url = f'https://fastball-clips.mlb.com/{game_id}/'
 
-i = 0
+        i = 0
 
-while i != times:
+        print('game_id: ', game_id)
 
-    print('\n=============\n')
+        while i != times:
 
-    with request.urlopen(f'https://baseballsavant.mlb.com/gf?game_pk={game_id}&_=159621768973{i}') as response:
-        source = response.read()
-        data = json.loads(source)
+            print('\n=============\n')
+            # print(f'https://baseballsavant.mlb.com/gf?game_pk={game_id}&_=159621768973{i}')
 
-        home_team = get_team_by_dict(data['home_team_data'])
-        away_team = get_team_by_dict(data['away_team_data'])
-        game_date = datetime.strptime(data['game_date'], '%Y-%m-%d')
+            with request.urlopen(f'https://baseballsavant.mlb.com/gf?game_pk={game_id}&_=1596217689{i}') as response:
+                source = response.read()
+                data = json.loads(source)
+                # with open('/Users/aadams/Downloads/data3.json', 'w') as outfile:
+                #     json.dump(data, outfile)
 
-        game = get_game(data['scoreboard']['gamePk'], game_date, data['game_status'], home_team, away_team, data)
-        path_name = f'{PLAY_VIDEO_ROOT}{game.path_name_with_id}'
-        Path(path_name).mkdir(parents=True, exist_ok=True)
+                if data['game_status'] == 'F':
+                    times = i + 1
 
-        for feed in feeds:
-            top_bottom = 't' if feed == 'team_home' else 'b'
-            top_bottom_full = 'Top' if feed == 'team_home' else 'Bottom'
+                if 'home_team_data' in data:
+                    home_team = get_team_by_dict(data['home_team_data'])
+                    away_team = get_team_by_dict(data['away_team_data'])
+                else:
+                    home_team = get_team_by_dict(data['scoreboard']['teams']['home'])
+                    away_team = get_team_by_dict(data['scoreboard']['teams']['away'])
 
-            for play in data[feed]:
-                print(play['rowId'], play['batter'], play['pitcher'])
-                batter = get_player_by_id_name(play['batter'], play['batter_name'])
-                pitcher = get_player_by_id_name(play['pitcher'], play['pitcher_name'])
-                at_bat = get_ab(game, play, top_bottom_full)
+                if 'game_date' in data:
+                    game_date = parse(data['game_date'])
+                elif 'gameDate' in data:
+                    game_date = parse(data['gameDate'])
 
-                pitch = get_pitch(at_bat, play)
-                print(pitch.data['game_total_pitches'])
+                game = get_game(data['scoreboard']['gamePk'], game_date, data['game_status'], home_team, away_team,
+                                data)
 
-                current_id = pitch.data['game_total_pitches']
+                path_name = f'{PLAY_VIDEO_ROOT}{game.path_name_with_id}'
+                Path(path_name).mkdir(parents=True, exist_ok=True)
 
-                next_id = pitch.next_pitch_id
+                with open(f'{path_name}/{game_id}.json', 'w') as outfile:
+                    json.dump(data, outfile, indent=2)
 
-                if not os.path.exists(pitch.video_filepath):
-                    file_url = f'{clips_base_url}/{play["play_id"]}.mp4'
+                for feed in feeds:
+                    top_bottom = 't' if feed == 'team_home' else 'b'
+                    top_bottom_full = 'Top' if feed == 'team_home' else 'Bottom'
 
-                    myfile = requests.get(file_url, headers=headers)
+                    if feed in data:
+                        for play in reversed(data[feed]):
+                            # print(play['rowId'], play['batter'], play['pitcher'])
+                            at_bat = get_ab(game, play, top_bottom_full)
 
-                    if myfile.ok:
-                        open(pitch.video_filepath, 'wb').write(myfile.content)
-                        print(f'{game_id}: Success: ({feed}): {pitch.video_filename()}')
-                    else:
-                        print(f'{game_id}: Failure ({feed}): {pitch.video_filename()}, {file_url}')
+                            pitch = get_pitch(at_bat, play)
 
-    # time.sleep(interval)
-    i += 1
+                            if download_videos:
+                                if not os.path.exists(pitch.video_filepath):
+                                    file_url = f'{clips_base_url}away/{play["play_id"]}.mp4'
+
+                                    myfile = requests.get(file_url, headers=headers)
+
+                                    if not myfile.ok:
+                                        print('no home')
+                                        file_url = f'{clips_base_url}home/{play["play_id"]}.mp4'
+                                        myfile = requests.get(file_url, headers=headers)
+                                    if not myfile.ok:
+                                        print('no away')
+                                        file_url = f'{clips_base_url}network/{play["play_id"]}.mp4'
+                                        myfile = requests.get(file_url, headers=headers)
+
+                                    if myfile.ok:
+                                        open(pitch.video_filepath, 'wb').write(myfile.content)
+
+                                        if save_highlights and pitch.is_highlight:
+                                            open(f'/Users/aadams/Downloads/2020-08-05_hou-ari/{pitch.video_filename()}',
+                                                 'wb').write(myfile.content)
+
+                                        print(f'{game_id}: Success: ({feed}): {pitch.video_filename()}')
+                                    else:
+                                        print(f'{game_id}: Failure ({feed}): {pitch.video_filename()}, {file_url}')
+
+            time.sleep(interval)
+            i += 1

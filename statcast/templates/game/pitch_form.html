@@ -7,16 +7,31 @@
     }
 
     #pitcher-boundry,
-    #tipping-glove {
+    #tipping-glove,
+    #crop-boundry,
+    #zone-boundry {
       border: 1px solid #fff;
       position: absolute;
     }
+
+    #crop-boundry {
+      border-color: yellow;
+    }
+
+    #zone-boundry {
+      border-color: #7abaff;
+    }
+    #pitchvideo {
+      cursor: crosshair;
+    }
   </style>
 
-  <h2>{{ pitch.at_bat.full_inning_string }}</h2>
+  <h2>{{ pitch.at_bat.full_inning_string }} <small>{{ pitch.data.pitch_type }} {{ pitch.is_highlight }}</small></h2>
 
   <div class="row">
     <div class="col-auto m-0 p-0">
+      <div id="crop-boundry" style="left: {{ pitch.crop_top_left_x }}px; top: {{ pitch.crop_top_left_y }}px; width: {{ pitch.crop_w }}px; height: {{ pitch.crop_h }}px;"></div>
+      <div id="zone-boundry" style="left: {{ pitch.zone_top_left_x }}px; top: {{ pitch.zone_top_left_y }}px; width: {{ pitch.zone_w }}px; height: {{ pitch.zone_h }}px;"></div>
       <div id="pitcher-boundry" style="left: {{ pitch.video_rubber_x }}px; width: 700px; height: {{ pitch.pitcher_height_y }}px; top: {{ pitch.video_rubber_y }}px;"></div>
       <video id="pitchvideo" src="{{ pitch.video_url }}" controls></video>
     </div>
@@ -41,6 +56,21 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col mb-3">
+      <div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons" id="xy_buttons">
+        <label class="btn btn-secondary active">
+          <input type="radio" name="xy_selector" id="xy_zone" value="zone" checked>Strike Zone
+        </label>
+        <label class="btn btn-secondary">
+          <input type="radio" name="xy_selector" id="xy_crop" value="crop">Crop
+        </label>
+        <label class="btn btn-secondary">
+          <input type="radio" name="xy_selector" id="xy_pitcher" value="pitcher">Pitcher
+        </label>
+      </div>
     </div>
   </div>
   <div class="row">
@@ -77,6 +107,13 @@
           $('#pitcher-boundry').css('top', $(this).val() + 'px');
         });
 
+        $('#id_crop_top_left_x, #id_crop_top_left_y, #id_crop_bottom_right_x, #id_crop_bottom_right_y').change(function () {
+          update_crop();
+        });
+
+        $('#id_zone_top_left_x, #id_zone_top_left_y, #id_zone_bottom_right_x, #id_zone_bottom_right_y').change(function () {
+          update_zone();
+        });
 
         $('#id_pitcher_height_y').change(function () {
           let height_diff = parseInt($('#pitcher-boundry').css('height'), 10) - $(this).val();
@@ -94,22 +131,47 @@
           $('#id_pitch_scene_time').val(document.getElementById("pitch_scene_time").innerHTML);
         });
 
+
         $('#pitchvideo').on('click', function (e) {
+          let cur_xy = $('#xy_buttons input[type="radio"]:checked').val();
           let offset = $(this).offset();
-          let posX = offset.left;
-          let posY = offset.top;
+          let posX = offset.left.toFixed(2);
+          let posY = offset.top.toFixed(2);
           let clickX = e.pageX - posX;
           let clickY = e.pageY - posY;
 
-          let box_height = parseInt($('#id_pitcher_height_y').val(), 10);
+          if (cur_xy === 'pitcher') {
 
-          if (e.altKey && e.metaKey) {
-            let height_diff = parseInt($('#id_video_rubber_y').val()) - clickY;
-            $('#id_pitcher_height_y').val(box_height + height_diff).trigger('change');
+            let box_height = parseInt($('#id_pitcher_height_y').val(), 10);
 
-          } else if (e.metaKey) {
-            $('#id_video_rubber_x').val(clickX).trigger('change');
-            $('#id_video_rubber_y').val(clickY - box_height).trigger('change');
+            if (e.altKey && e.metaKey) {
+              let height_diff = parseInt($('#id_video_rubber_y').val()) - clickY;
+              $('#id_pitcher_height_y').val(box_height + height_diff).trigger('change');
+
+            } else if (e.metaKey) {
+              $('#id_video_rubber_x').val(clickX).trigger('change');
+              $('#id_video_rubber_y').val(clickY - box_height).trigger('change');
+            }
+
+          } else if (cur_xy === 'zone') {
+            if (e.altKey && e.metaKey) {
+              $('#id_zone_bottom_right_x').val(clickX).trigger('change');
+              $('#id_zone_bottom_right_y').val(clickY).trigger('change');
+
+            } else if (e.metaKey) {
+              $('#id_zone_top_left_x').val(clickX).trigger('change');
+              $('#id_zone_top_left_y').val(clickY).trigger('change');
+            }
+
+          } else if (cur_xy === 'crop') {
+            if (e.altKey && e.metaKey) {
+              $('#id_crop_bottom_right_x').val(clickX).trigger('change');
+              $('#id_crop_bottom_right_y').val(clickY).trigger('change');
+
+            } else if (e.metaKey) {
+              $('#id_crop_top_left_x').val(clickX).trigger('change');
+              $('#id_crop_top_left_y').val(clickY).trigger('change');
+            }
           }
 
           e.preventDefault();
@@ -128,6 +190,38 @@
             }
           }
         });
+
+        function update_crop() {
+          let top_x = $('#id_crop_top_left_x').val();
+          let top_y = $('#id_crop_top_left_y').val();
+          let bottom_x = $('#id_crop_bottom_right_x').val();
+          let bottom_y = $('#id_crop_bottom_right_y').val();
+          let width = bottom_x - top_x;
+          let height = bottom_y - top_y;
+
+          $('#crop-boundry').css('left', top_x + 'px');
+          $('#crop-boundry').css('top', top_y + 'px');
+          $('#crop-boundry').css('height', height + 'px');
+          $('#crop-boundry').css('width', width + 'px');
+
+        };
+
+        function update_zone() {
+          let top_x = $('#id_zone_top_left_x').val();
+          let top_y = $('#id_zone_top_left_y').val();
+          let bottom_x = $('#id_zone_bottom_right_x').val();
+          let bottom_y = $('#id_zone_bottom_right_y').val();
+          let width = bottom_x - top_x;
+          let height = bottom_y - top_y;
+
+          $('#zone-boundry').css('left', top_x + 'px');
+          $('#zone-boundry').css('top', top_y + 'px');
+          $('#zone-boundry').css('height', height + 'px');
+          $('#zone-boundry').css('width', width + 'px');
+
+        };
+
+
       });
   </script>
 {% endblock %}

@@ -244,8 +244,15 @@ LOGGING = {
 INSTALLED_APPS += ["compressor"]
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
+# COMPRESSOR CONFIGURATION
+# ------------------------------------------------------------------------------
+# COMPRESS_ROOT = STATIC_ROOT
+# COMPRESS_OFFLINE = False
+# STATICFILES_FINDERS += ('compressor.finders.CompressorFinder',)
+COMPRESS_PRECOMPILERS = (('text/x-scss', 'django_libsass.SassCompiler'),)
+
 # Your stuff...
 # ------------------------------------------------------------------------------
 
 PLAY_VIDEO_ROOT = f'{MEDIA_ROOT}/plays/'
-PLAY_VIDEO_URL = f'{MEDIA_URL}/plays/'
+PLAY_VIDEO_URL = f'{MEDIA_URL}plays/'

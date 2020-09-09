@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="h2">{{ game.game_description }}</h1>
+
+  <ul class="list-inline">
+    <li class="list-inline-item">Key:</li>
+    <li class="list-inline-item"><span class="badge badge-light">Video Available</span></li>
+    <li class="list-inline-item"><span class="badge badge-success">Notible Play</span></li>
+    <li class="list-inline-item"><span class="badge badge-secondary">Video Not Available</span></li>
+  </ul>
+
+  <hr>
+
+  {% regroup game.at_bats.all by inning as grouped_innings %}
+  {% for inning_group in grouped_innings reversed %}
+
+    {% regroup inning_group.list by top_bottom as grouped_top_bottom %}
+    {% for half_inning in grouped_top_bottom %}
+      <h2 class="h4 pt-2" style="border-top: 3px solid #999">{{ half_inning.grouper }} {{ inning_group.grouper }}</h2>
+
+      {% for at_bat in half_inning.list %}
+        <h3 class="h6 mb-0 pt-2" style="border-top: 1px solid #ccc">{{ at_bat.batter.name_first_last }}
+          <small class="text-muted"> – {{ at_bat.pitcher.name_first_last }} pitching. {{ at_bat.best_description }} {{ at_bat.id }} {{ at_bat.ab_number }}</small></h3>
+
+        <ul class="list-inline mb-3">
+          {% for pitch in at_bat.pitches.all %}
+            <li class="list-inline-item">
+              {% if pitch.video_exists %}
+                <a href="{% url 'game:pitch_update' pitch.id %}" class="badge badge-{% if pitch.is_highlight %}success{% else %}light{% endif %}" target="pitch_edit">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</a>
+              {% else %}
+                <span class="badge badge-secondary">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    {% endfor %}
+
+  {% endfor %}
+{% endblock %}

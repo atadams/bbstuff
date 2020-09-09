@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>{{ pitch.at_bat.full_inning_string }}</h2>
+
+  <div class="row">
+    <div class="col">
+      <video id="pitchvideo" src="{{ pitch.mlb_video_url_astros }}" controls style="width: 100%;"></video>
+    </div>
+  </div>
+
+{% endblock %}
