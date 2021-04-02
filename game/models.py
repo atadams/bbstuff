@@ -330,7 +330,8 @@ class Pitch(models.Model):
         return os.path.exists(self.video_filepath)
 
     def mlb_video_url(self, feed='home'):
-        return f'https://fastball-clips.mlb.com/{self.at_bat.game_id}/{feed}/{self.play_id}.mp4'
+        # return f'https://fastball-clips.mlb.com/{self.at_bat.game_id}/{feed}/{self.play_id}.mp4'
+        return f'https://sporty-clips.mlb.com/{self.play_id}.mp4'
 
     @property
     def mlb_video_url_home(self):
