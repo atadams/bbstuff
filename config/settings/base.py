@@ -252,7 +252,7 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 # COMPRESSOR CONFIGURATION
 # ------------------------------------------------------------------------------
-# COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_ROOT = STATIC_ROOT
 # COMPRESS_OFFLINE = False
 # STATICFILES_FINDERS += ('compressor.finders.CompressorFinder',)
 COMPRESS_PRECOMPILERS = (('text/x-scss', 'django_libsass.SassCompiler'),)
