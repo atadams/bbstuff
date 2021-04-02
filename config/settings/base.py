@@ -41,8 +41,15 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
+# DATABASES = {
+#     "default": env.db("DATABASE_URL", default="postgres:///statcast")
+# }
+
 DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgres:///statcast")
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'statcast',
+    }
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
