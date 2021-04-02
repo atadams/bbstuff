@@ -30,7 +30,7 @@
           {% for pitch in at_bat.pitches.all %}
             <li class="list-inline-item">
 {#              <a href="{% url 'game:pitch_update' pitch.id %}" class="badge badge-{% if pitch.is_highlight %}success{% else %}light{% endif %}">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</a>#}
-            {% if game.is_previous_game or False %}
+            {% if game.is_previous_game and False %}
               <a href="{{ pitch.mlb_video_url }}" class="badge badge-{% if pitch.is_highlight %}success{% else %}light{% endif %}">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</a>
             {% else %}
               {% if pitch.video_exists %}
