@@ -1,0 +1,79 @@
+@import "vendor/bootstrap/functions";
+@import "custom_bootstrap_vars";
+@import "vendor/bootstrap/bootstrap";
+
+
+
+
+// project specific CSS goes here
+
+////////////////////////////////
+		//Variables//
+////////////////////////////////
+
+// Alert colors
+
+$white: #fff;
+$mint-green: #d6e9c6;
+$black: #000;
+$pink: #f2dede;
+$dark-pink: #eed3d7;
+$red: #b94a48;
+
+////////////////////////////////
+		//Alerts//
+////////////////////////////////
+
+// bootstrap alert CSS, translated to the django-standard levels of
+// debug, info, success, warning, error
+
+.alert-debug {
+  background-color: $white;
+  border-color: $mint-green;
+  color: $black;
+}
+
+.alert-error {
+  background-color: $pink;
+  border-color: $dark-pink;
+  color: $red;
+}
+
+.progress-line {
+  margin-left: 0;
+  width: 1px;
+  height: 100%;
+  background-color: white;
+  position: absolute;
+  top: 0;
+  z-index: 2;
+}
+
+.progress-line.active {
+  animation: scanning 10s linear 1;
+  animation-delay: 200ms;
+}
+
+@keyframes scanning {
+  100% {
+    transform: translateX(969px);
+  }
+}
+
+pre {
+  font-size: 12px;
+}
+
+#pitcher-boundry,
+#tipping-glove {
+  border: 1px solid #fff;
+  position: absolute;
+}
+
+.badge-light {
+  border: 1px solid $gray-300;
+}
+
+span.badge-secondary {
+  color: $gray-600;
+}

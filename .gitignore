@@ -73,7 +73,7 @@ te4q/media/
 .mypy_cache/
 .vscode/
 static
-!te4q/static
+!statcast/static
 !/media/
 /staticfiles/
 /statcast/media
