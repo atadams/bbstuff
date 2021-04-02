@@ -78,6 +78,9 @@
       <form method="post">{% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Update">
+
+        <p>http://viz.mlb.com/sideways?game_pk={{ pitch.at_bat.game_id }}&play_id={{ pitch.play_id }}&w=480&h=218</p>
+        <p>https://viz.mlb.com/play?game_pk={{ pitch.at_bat.game_id }}&play_id={{ pitch.play_id }}&w=640&h=640</p>
       </form>
     </div>
   </div>
@@ -137,8 +140,8 @@
           let offset = $(this).offset();
           let posX = offset.left.toFixed(2);
           let posY = offset.top.toFixed(2);
-          let clickX = e.pageX - posX;
-          let clickY = e.pageY - posY;
+          let clickX = parseInt(e.pageX - posX);
+          let clickY = parseInt(e.pageY - posY);
 
           if (cur_xy === 'pitcher') {
 

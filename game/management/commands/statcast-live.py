@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         interval = 2
         times = -1
-        game_id = 631160
+        game_id = 634640
         download_videos = True
         save_highlights = False
 
@@ -33,10 +33,10 @@ class Command(BaseCommand):
 
         while i != times:
 
-            print('\n=============\n')
+            print('=============')
             # print(f'https://baseballsavant.mlb.com/gf?game_pk={game_id}&_=159621768973{i}')
 
-            with request.urlopen(f'https://baseballsavant.mlb.com/gf?game_pk={game_id}&_=1596217689{i}') as response:
+            with request.urlopen(f'https://baseballsavant.mlb.com/gf?game_pk={game_id}&_=15962176{i}') as response:
                 source = response.read()
                 data = json.loads(source)
                 # with open('/Users/aadams/Downloads/data3.json', 'w') as outfile:

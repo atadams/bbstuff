@@ -1,3 +1,4 @@
+import sys
 from distutils.util import strtobool
 
 from game.models import AtBat, Game, Pitch, Player, Team
@@ -52,6 +53,23 @@ def get_game(game_id, game_date, game_status, home_team, away_team, data):
     return game
 
 
+def get_game_statsapi(game_id, game_date, game_status, home_team, away_team, data):
+    game, created = Game.objects.get_or_create(
+        id=game_id,
+        defaults={
+            'date': game_date,
+            # 'game_status': game_status,
+            'home_team': home_team,
+            'away_team': away_team,
+        }
+    )
+    game.date = game_date
+    game.api_data = data
+    game.save()
+
+    return game
+
+
 def get_ab(game, ab_dict, top_bottom):
     batter = get_player_by_id_name(ab_dict['batter'], ab_dict['batter_name'])
     pitcher = get_player_by_id_name(ab_dict['pitcher'], ab_dict['pitcher_name'])
@@ -96,3 +114,14 @@ def even_number(num):
         return int_num
     else:
         return int_num + 1
+
+
+def progress(count, total, status=''):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+
+    percents = round(100.0 * count / float(total), 1)
+    bar = '=' * filled_len + ' ' * (bar_len - filled_len)
+
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.flush()

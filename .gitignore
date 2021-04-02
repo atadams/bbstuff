@@ -74,6 +74,6 @@ te4q/media/
 .vscode/
 static
 !te4q/static
+!/media/
 /staticfiles/
 /statcast/media
-/game/.ipynb_checkpoints

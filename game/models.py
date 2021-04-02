@@ -5,13 +5,15 @@ from django.db import models
 from django.db.models import F, Max, Min
 
 from config.settings.base import MEDIA_ROOT, PLAY_VIDEO_ROOT, PLAY_VIDEO_URL
-from game.statcast import get_field_with_percentage
+from game.statcast import get_field_with_percentage, get_player_stats
 
 LOGO_BASE_URL = f'https://www.mlbstatic.com/team-logos/'  # https://www.mlbstatic.com/team-logos/117.svg
 LOGO_PATH_SVG = f'{MEDIA_ROOT}/team_logos/svg/'
 LOGO_PATH_PNG = f'{MEDIA_ROOT}/team_logos/png/'
 LOGO_ON_DARK_PATH_SVG = f'{MEDIA_ROOT}/team_logos_on_dark/svg/'
 LOGO_ON_DARK_PATH_PNG = f'{MEDIA_ROOT}/team_logos_on_dark/png/'
+
+BALL_ADJ = 1.5 / 12
 
 
 class Team(models.Model):
@@ -70,8 +72,10 @@ class Player(models.Model):
     def mugshot_url(self):
         return f'https://content.mlb.com/images/headshots/current/60x60/{self.id}.png'
 
-    def ba_dataframe(self, player_type='batter', year='2020'):
-        return get_field_with_percentage(self.id, player_type=player_type, data_field='ba', year=year)
+    def ba_dataframe(self, player_type='batter', year='2020', p_throws='', pitch_type=''):
+        return get_field_with_percentage(self.id, player_type=player_type, data_field='ba', year=year,
+                                         p_throws=p_throws,
+                                         pitch_type=pitch_type)
 
     @property
     def ba_zone_image(self, year='2020'):
@@ -79,6 +83,16 @@ class Player(models.Model):
         img = None
 
         return img
+
+    @property
+    def statsapi_data(self):
+        return get_player_stats(self.id)
+
+    @property
+    def zone_top_bottom(self):
+        data = self.statsapi_data
+
+        return data['strikeZoneTop'], data['strikeZoneBottom']
 
 
 class GameManager(models.Manager):
@@ -94,6 +108,7 @@ class Game(models.Model):
     is_active = models.BooleanField(default=True)
 
     data = models.JSONField(null=True)
+    api_data = models.JSONField(null=True)
 
     objects = GameManager()
 
@@ -204,6 +219,8 @@ class Pitch(models.Model):
     include_in_tipping = models.BooleanField(default=True)
     include_in_overlay = models.BooleanField(default=True)
 
+    strike_probability = models.DecimalField(max_digits=8, decimal_places=2, null=True)
+
     def __str__(self):
         return f'{self.data["pitch_name"]} – {self.data["description"]}'
 
@@ -299,7 +316,7 @@ class Pitch(models.Model):
     def is_highlight(self):
         if 'team_batting' in self.data and self.data['team_batting'] == 'HOU':
             if self.data['call_name'] == 'In Play' and self.data.get('result', '') in ['Home Run', '2B', '3B', 'Triple',
-                                                                               'Double', 'Single']:
+                                                                                       'Double', 'Single']:
                 return True
 
         if self.data['team_fielding'] == 'HOU':
@@ -357,6 +374,21 @@ class Pitch(models.Model):
     @property
     def runners_icon_filepath(self):
         return f'{MEDIA_ROOT}icons/runners-{self.runners_str}.png'
+
+    @property
+    def in_zone(self):
+        if (abs(self.data['px']) <= 20 / 2 / 12) and (self.data['sz_bot'] - BALL_ADJ) <= self.data['pz'] <= (
+            self.data['sz_top'] + BALL_ADJ):
+            return True
+        else:
+            return False
+
+    @property
+    def in_standard_zone(self):
+        if (abs(self.data['px']) <= 20 / 2 / 12) and (1.5 - BALL_ADJ) <= self.data['pz'] <= (3.5 + BALL_ADJ):
+            return True
+        else:
+            return False
 
 
 def get_pitches_by_at_bat_ids(at_bat_ids, only_marked_include=True):

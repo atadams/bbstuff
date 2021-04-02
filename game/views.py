@@ -32,10 +32,11 @@ class PitchUpdate(UpdateView):
     model = Pitch
 
     fields = [
-        'caption',
-        'caption_time',
+        # 'caption',
+        # 'caption_time',
         'pitch_scene_time',
         'pitch_release_time',
+        'pitch_plate_time',
         'include_in_tipping',
 
         'crop_top_left_x',

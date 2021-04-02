@@ -3,6 +3,10 @@
 {% block content %}
   <h1 class="h2">{{ game.game_description }}</h1>
 
+{#  <iframe src="http://www.fangraphs.com/graphframe.aspx?config=0&static=0&type=wins&num=0&h=300&w=650&date=2020-09-30&team=Astros&dh=0" frameborder="0" scrolling="no" height="300" width="650" style="border:1px solid black;"></iframe>#}
+{#  <br/>#}
+{#  <p style="font-size:9pt; margin-bottom: 2rem;">Source: <a href="http://www.fangraphs.com/wins.aspx?date=2020-09-24&team=Astros&dh=0&season=2020">FanGraphs</a></p>#}
+
   <ul class="list-inline">
     <li class="list-inline-item">Key: </li>
     <li class="list-inline-item"><span class="badge badge-light">Video Available</span></li>
@@ -37,6 +41,13 @@
                 {% else %}
                 <span class="badge badge-secondary">P{{ pitch.pitch_number }}: {{ pitch.pitch_result }}</span>
               {% endif %}
+              {% if pitch.data.call == "X" %}
+                <a href="https://viz.mlb.com/play?game_pk={{ pitch.at_bat.game_id }}&play_id={{ pitch.play_id }}&w=640&h=640" target="graphic" class="badge badge-secondary">C</a>
+                {% if pitch.data.events == "Home Run" %}
+                  <a href="https://viz.mlb.com/sideways?game_pk={{ pitch.at_bat.game_id }}&play_id={{ pitch.play_id }}&w=720&h=327" target="graphic" class="badge badge-secondary">H</a>
+                {% endif %}
+              {% endif %}
+
             {% endif %}
             </li>
           {% endfor %}
