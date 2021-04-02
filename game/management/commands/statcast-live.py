@@ -31,6 +31,8 @@ class Command(BaseCommand):
 
         print('game_id: ', game_id)
 
+        count_downloads = 1
+
         while i != times:
 
             print('=============')
@@ -77,7 +79,7 @@ class Command(BaseCommand):
 
                             pitch = get_pitch(at_bat, play)
 
-                            if download_videos:
+                            if download_videos and count_downloads <= 10:
                                 if not os.path.exists(pitch.video_filepath):
                                     file_url = f'{clips_base_url}away/{play["play_id"]}.mp4'
 
@@ -102,6 +104,7 @@ class Command(BaseCommand):
                                         print(f'{game_id}: Success: ({feed}): {pitch.video_filename()}')
                                     else:
                                         print(f'{game_id}: Failure ({feed}): {pitch.video_filename()}, {file_url}')
+                                count_downloads += 1
 
             time.sleep(interval)
             i += 1
